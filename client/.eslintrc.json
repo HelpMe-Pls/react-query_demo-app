@@ -11,8 +11,15 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"],
-        "paths": ["src"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ],
+        "paths": [
+          "src"
+        ]
       }
     }
   },
@@ -39,7 +46,12 @@
     "jest": true
   },
   "rules": {
-    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "import/no-extraneous-dependencies": [
+      2,
+      {
+        "devDependencies": true
+      }
+    ],
     "testing-library/await-async-query": "error",
     "testing-library/no-await-sync-query": "error",
     "testing-library/no-debug": "warn",
@@ -47,9 +59,22 @@
     "jest-dom/prefer-enabled-disabled": "error",
     "jest-dom/prefer-required": "error",
     "jest-dom/prefer-to-have-attribute": "error",
-    "react/prop-types": ["off"],
-    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".jsx"] }],
-    "import/extensions": ["error", "never"],
+    "react/prop-types": [
+      "off"
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".tsx",
+          ".jsx"
+        ]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "never"
+    ],
     "import/prefer-default-export": 0,
     "import/no-anonymous-default-export": 0,
     "import/no-unresolved": 2,
@@ -64,6 +89,7 @@
     "react-hooks/exhaustive-deps": "warn",
     "react/no-array-index-key": "off",
     "react/react-in-jsx-scope": "off",
+    "react/jsx-indent": "off",
     "prettier/prettier": [
       "error",
       {
