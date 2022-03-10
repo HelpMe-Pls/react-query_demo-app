@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useCallback } from 'react';
 import { useQuery } from 'react-query'
 
 import type { Staff } from '../../../../../shared/types';
@@ -7,22 +7,26 @@ import { queryKeys } from '../../../react-query/constants';
 import { filterByTreatment } from '../utils';
 
 async function getStaff(): Promise<Staff[]> {
-  const { data } = await axiosInstance.get('/staff');
-  return data;
+	const { data } = await axiosInstance.get('/staff');
+	return data;
 }
 
 interface UseStaff {
-  staff: Staff[];
-  filter: string;
-  setFilter: Dispatch<SetStateAction<string>>;
+	staff: Staff[];
+	filter: string;
+	setFilter: Dispatch<SetStateAction<string>>;
 }
 
 export function useStaff(): UseStaff {
-  // for filtering staff by treatment
-  const [filter, setFilter] = useState('all');
+	// for filtering staff by treatment
+	const [filter, setFilter] = useState('all');
 
-  const fallback = []
-  const { data: staff = fallback } = useQuery(queryKeys.staff, getStaff);
+	const selectFn = useCallback((unfilteredStaff) => filterByTreatment(unfilteredStaff, filter), [filter])
 
-  return { staff, filter, setFilter };
+	const fallback = []
+	const { data: staff = fallback } = useQuery(queryKeys.staff, getStaff, {
+		select: filter === 'all' ? undefined : selectFn
+	});
+
+	return { staff, filter, setFilter };
 }
