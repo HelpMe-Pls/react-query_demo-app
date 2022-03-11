@@ -25,6 +25,9 @@ export const queryClient = new QueryClient({
             refetchOnMount: false,
             refetchOnWindowFocus: false,
             refetchOnReconnect: false
+        },
+        mutations: {
+            onError: queryErrorHandler,
         }
     }
 });
