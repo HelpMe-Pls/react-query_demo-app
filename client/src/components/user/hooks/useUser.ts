@@ -29,11 +29,12 @@ interface UseUser {
 export function useUser(): UseUser {
   const queryClient = useQueryClient()
   const { data: user } = useQuery(queryKeys.user, () => getUser(user), {
-    initialData: getStoredUser(), // so that when the user REFRESHES the page after they logged in, they're still logged in (by the data that is persisted from localStorage
+    initialData: getStoredUser(), // so that when the user REFRESHES the page after they logged in, they're still logged in (by the data that is persisted from localStorage from the onSuccess option below)
     onSuccess: (received: User | null) => {
       if (!received) clearStoredUser()
+      // null: user logged out
       else setStoredUser(received)
-    }
+    },
   })
 
   // update the user in the query cache
@@ -43,6 +44,9 @@ export function useUser(): UseUser {
 
   // meant to be called from useAuth
   function clearUser() {
+    queryClient.removeQueries('user-appointments')
+
+    // not using removeQueries(queryKeys.user) because it won't trigger the {onSuccess}
     queryClient.setQueryData(queryKeys.user, null)
   }
 
