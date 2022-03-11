@@ -28,7 +28,13 @@ interface UseUser {
 
 export function useUser(): UseUser {
   const queryClient = useQueryClient()
-  const { data: user } = useQuery(queryKeys.user, () => getUser(user))
+  const { data: user } = useQuery(queryKeys.user, () => getUser(user), {
+    initialData: getStoredUser(), // so that when the user REFRESHES the page after they logged in, they're still logged in (by the data that is persisted from localStorage
+    onSuccess: (received: User | null) => {
+      if (!received) clearStoredUser()
+      else setStoredUser(received)
+    }
+  })
 
   // update the user in the query cache
   function updateUser(newUser: User): void {
