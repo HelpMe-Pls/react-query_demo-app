@@ -9,12 +9,12 @@ import {
 	setStoredUser
 } from '../../../user-storage'
 
-async function getUser(user: User | null): Promise<User | null> {
+async function getUser(user: User | null, signal: AbortSignal): Promise<User | null> {
 	if (!user) return null
 	const { data }: AxiosResponse<{ user: User }> = await axiosInstance.get(
 		`/user/${user.id}`,
 		{
-			headers: getJWTHeader(user),
+			headers: getJWTHeader(user), signal
 		}
 	)
 	return data.user
@@ -28,7 +28,7 @@ interface UseUser {
 
 export function useUser(): UseUser {
 	const queryClient = useQueryClient()
-	const { data: user } = useQuery(queryKeys.user, () => getUser(user), {
+	const { data: user } = useQuery(queryKeys.user, ({ signal, }) => getUser(user, signal), {
 		initialData: getStoredUser(), // so that when the user REFRESHES the page after they logged in, they're still logged in (by the data that is persisted in localStorage from the onSuccess option below)
 		onSuccess: (received: User | null) => {
 			if (!received) clearStoredUser()
