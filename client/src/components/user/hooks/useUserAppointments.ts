@@ -19,8 +19,9 @@ async function getUserAppointments(
 export function useUserAppointments(): Appointment[] {
 	const { user } = useUser()
 	const fallback: Appointment[] = []
-	const { data: userAppointments = fallback } = useQuery('user-appointments', () =>
-		getUserAppointments(user),
+	const { data: userAppointments = fallback } = useQuery(
+		[queryKeys.appointments, queryKeys.user, user?.id],
+		() => getUserAppointments(user),
 		{ enabled: !!user }	// only run this query when there's a logged in user
 	)
 	return userAppointments

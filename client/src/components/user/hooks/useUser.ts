@@ -44,7 +44,7 @@ export function useUser(): UseUser {
 
   // meant to be called from useAuth
   function clearUser() {
-    queryClient.removeQueries('user-appointments')
+    queryClient.removeQueries([queryKeys.appointments, queryKeys.user])
 
     // not using removeQueries(queryKeys.user) because it won't trigger the {onSuccess}
     queryClient.setQueryData(queryKeys.user, null)
