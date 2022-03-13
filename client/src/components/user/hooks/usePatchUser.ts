@@ -36,7 +36,7 @@ export function usePatchUser(): UseMutateFunction<User, unknown, User, unknown> 
 		// returns a context that is passed to onError
 		onMutate: async (newData: User | null) => {
 			// cancel any ongoing queries for user data so that old server data doesn't overwrite our optimistic update
-			queryClient.cancelQueries(queryKeys.user)
+			await queryClient.cancelQueries(queryKeys.user)
 
 			// create a snapshot of previous user value
 			const previousUserData: User = queryClient.getQueryData(queryKeys.user)
@@ -58,7 +58,7 @@ export function usePatchUser(): UseMutateFunction<User, unknown, User, unknown> 
 			}
 		},
 		onSuccess:	// userData is the return value from patchUserOnServer()
-			(userData: User | null) => {
+			() => {
 				if (user) {
 					toast({
 						title: "Your info is updated.",
