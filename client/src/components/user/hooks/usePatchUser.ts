@@ -1,10 +1,10 @@
 import jsonpatch from 'fast-json-patch'
-import { useMutation, UseMutateFunction } from 'react-query'
+import { UseMutateFunction, useMutation, useQueryClient } from 'react-query'
 import type { User } from '../../../../../shared/types'
 import { axiosInstance, getJWTHeader } from '../../../axiosInstance'
-import { useUser } from './useUser'
+import { queryKeys } from '../../../react-query/constants'
 import { useCustomToast } from '../../app/hooks/useCustomToast'
-
+import { useUser } from './useUser'
 
 // for when we need a server function
 async function patchUserOnServer(
@@ -30,20 +30,47 @@ async function patchUserOnServer(
 export function usePatchUser(): UseMutateFunction<User, unknown, User, unknown> {
 	const { user, updateUser } = useUser()
 	const toast = useCustomToast()
+	const queryClient = useQueryClient()
 
 	const { mutate: patchUser } = useMutation((newData: User) => patchUserOnServer(newData, user), {
+		// returns a context that is passed to onError
+		onMutate: async (newData: User | null) => {
+			// cancel any ongoing queries for user data so that old server data doesn't overwrite our optimistic update
+			queryClient.cancelQueries(queryKeys.user)
+
+			// create a snapshot of previous user value
+			const previousUserData: User = queryClient.getQueryData(queryKeys.user)
+
+			// OPTIMISTICALLY update the cache with new user value from the input
+			updateUser(newData)
+
+			// return context object with snapshotted value
+			return { previousUserData }
+		},
+		// roll back the cache to the snapshotted value 
+		onError: (_error, _newData, ctx) => {
+			if (ctx.previousUserData) {
+				updateUser(ctx.previousUserData)
+				toast({
+					title: "Update failed. You info has NOT been changed.",
+					status: "warning"
+				})
+			}
+		},
 		onSuccess:	// userData is the return value from patchUserOnServer()
 			(userData: User | null) => {
 				if (user) {
-					updateUser(userData)
 					toast({
 						title: "Your info is updated.",
 						status: "success"
 					})
 				}
-			}
-
+			},
+		// invalidate the query so that we're in sync with the latest data from the server
+		onSettled: () => {
+			queryClient.invalidateQueries(queryKeys.user)
+		},
 	})
-
 	return patchUser
 }
+
