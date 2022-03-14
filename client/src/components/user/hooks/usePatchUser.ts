@@ -68,7 +68,7 @@ export function usePatchUser(): UseMutateFunction<User, unknown, User, unknown> 
 			},
 		// invalidate the query so that we're in sync with the latest data from the server
 		onSettled: () => {
-			queryClient.invalidateQueries(queryKeys.user)
+			queryClient.invalidateQueries(queryKeys.user);
 		},
 	})
 	return patchUser
