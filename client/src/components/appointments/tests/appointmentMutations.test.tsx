@@ -46,10 +46,13 @@ test('Cancel appointment', async () => {
 			<Calendar />
 		</MemoryRouter>
 	)
+
+	// find all the cancel buttons
 	const cancelButtons = await screen.findAllByRole('button', {
 		name: /cancel appointment/i,
 	})
-	// click on the first one to reserve
+
+	// click on the first one to cancel
 	fireEvent.click(cancelButtons[0])
 
 	// check for the toast alert

@@ -66,7 +66,8 @@ export function usePatchUser(): UseMutateFunction<User, unknown, User, unknown> 
 					})
 				}
 			},
-		// invalidate the query so that we're in sync with the latest data from the server
+		// invalidate the query so that we're in sync with the latest data from the server (but it somehow clears the user from the cache ?)
+		// remove/commenting this will fix that ?
 		onSettled: () => {
 			queryClient.invalidateQueries(queryKeys.user);
 		},
